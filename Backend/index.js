@@ -1,12 +1,30 @@
+// backend/index.js
 
-const express= require("express")
+const express = require("express");
+const { connection } = require("./config/db"); // Import your database connection here
+const oemSpecsRoutes = require("./routes/oemSpecsRoutes");
+const inventoryRoutes = require("./routes/inventoryRoutes");
 
-const app= express()
+const app = express();
+app.use(express.json());
 
-app.get('/',function(req,res){
-    res.send("backend are working")
-})
+app.use('/api/oem-specs', oemSpecsRoutes);
+app.use('/api/inventory', inventoryRoutes);
 
-app.listen(7000,()=>{
-    console.log("listen to port 7000")
-})
+
+app.get("/", function (req, res) {
+  res.send("Backend is working");
+});
+
+// Your database connection code goes here
+// Ensure you have connected to the database before starting the server
+
+const PORT =  7000;
+app.listen(PORT, async () => {
+  try {
+    await connection; // Ensure you have connected to the database before starting the server
+    console.log("Connected to the database successfully");
+  } catch (err) {
+    console.log("Failed to connect to the database");
+  }
+});
