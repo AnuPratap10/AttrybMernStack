@@ -1,18 +1,17 @@
 const Inventory = require("../models/inventoryModel");
 
+// get request
 exports.getAllInventory = async (req, res) => {
   try {
-    // Replace this comment with the code to fetch inventory entries from the database
     const inventory = await Inventory.find();
-
-    // Respond with the fetched inventory entries as a JSON array
     res.status(200).json(inventory);
-  } catch (error) {
+  } catch (err) {
     console.error("Error retrieving inventory entries:", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({error: "Internal server error"});
   }
 };
 
+// post request/
 exports.addInventory = async (req, res) => {
   try {
     const {
@@ -46,6 +45,50 @@ exports.addInventory = async (req, res) => {
     });
   } catch (error) {
     console.error("Error adding inventory entry:", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({error: "Internal server error"});
+  }
+};
+
+// Update an existing inventory entry by ID
+
+exports.updateInventory = async (req, res) => {
+  try {
+    const {id} = req.params;
+    const updateData = req.body;
+
+    // Find the inventory entry by ID and update it
+    const updatedInventoryEntry = await Inventory.findByIdAndUpdate(
+      id,
+      updateData,
+      {
+        new: true,
+      }
+    );
+
+    if (!updatedInventoryEntry) {
+      return res.status(404).json({error: "Inventory entry not found"});
+    }
+    res.json(updatedInventoryEntry);
+  } catch (error) {
+    console.error("Error updating inventory entry:", error);
+    res.status(500).json({error: "Internal server error"});
+  }
+};
+
+// Delete an inventory entry by ID
+exports.deleteInventory = async (req, res) => {
+  try {
+    const {id} = req.params;
+
+    const deletedEntry = await Inventory.findByIdAndDelete(id);
+
+    if (!deletedEntry) {
+      return res.status(404).json({error: "Inventory entry not found"});
+    }
+
+    res.status(200).json({message: "Inventory entry deleted successfully"});
+  } catch (error) {
+    console.error("Error deleting inventory entry:", error);
+    res.status(500).json({error: "Internal server error"});
   }
 };
